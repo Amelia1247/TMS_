@@ -1,0 +1,40 @@
+@page "/GetAllTeams"
+@using DTO
+@using Contracts
+
+@inject ITournamentService TournamentService
+@inject ITeamService TeamService
+@inject IPlayerService PlayerService
+@inject NavigationManager NavMgr
+
+<div id="main-wrapper" class="container">
+    <div class="row justify-content-center">
+
+        @if(teams != null){
+            <div>
+            
+                <h1>Teams</h1>
+        @foreach (var t in teams)
+        {
+            <div>
+                <p>Team name:@t.Name</p>
+                @foreach (var p in t.Players)
+                {
+                    <label>Player name: @p.Name</label>
+                }
+            </div>
+        }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<TeamDTO> teams = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        teams = await TeamService.GetAllTeams();
+    }
+
+}

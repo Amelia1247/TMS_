@@ -1,0 +1,4 @@
+obj\Debug\net7.0\Protos/Tournament.cs \
+obj\Debug\net7.0\Protos/TournamentGrpc.cs: Protos/player.proto\
+ Protos/team.proto\
+ Protos/tournament.proto

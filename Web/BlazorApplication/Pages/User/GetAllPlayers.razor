@@ -1,0 +1,36 @@
+@page "/GetAllPlayers"
+@using DTO
+@using Contracts
+
+@inject ITournamentService TournamentService
+@inject ITeamService TeamService
+@inject IPlayerService PlayerService
+@inject NavigationManager NavMgr
+
+<div id="main-wrapper" class="container">
+    <div class="row justify-content-center">
+
+        @if(players != null){
+            <div>
+            
+                <h1>List of Players</h1>
+        @foreach (var p in players)
+        {
+            <div>
+                <p>@p.Name</p>
+            </div>
+        }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<PlayerDTO> players = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        players = await PlayerService.GetAllPlayers();
+    }
+
+}

@@ -1,0 +1,252 @@
+@page "/CreateTournament"
+@using DTO
+@using Contracts
+
+@inject ITournamentService TournamentService
+@inject ITeamService TeamService
+@inject IPlayerService PlayerService
+@inject NavigationManager NavMgr
+
+@*<AuthorizeView Policy="Admin">
+    <NotAuthorized>
+        <p> Guests dont have permission to create tournment.</p>
+    </NotAuthorized>
+    <Authorized>*@
+        <div id="main-wrapper" class="container">
+            <div class="row justify-content-center">
+                <div class="col-10 p-0">
+                    <div class="card border-0 p-0">
+                        <div class="card-body p-0 form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <label>Name</label>
+                                    <InputText @bind-Value="_tournamentName" class="form-control"/>
+                                </div>
+                                <div class="col">
+                                    <label class="col-6">Description</label>
+                                    <InputText @bind-Value="_tournamentDescr"class="form-control col-6"/>
+                                </div>
+                            </div>
+                            <div class="mb-5"></div>
+                            <h4>Teams</h4>
+                            <div class="row">
+                                <div class="col">
+                                    
+                                    <div class="row mb-4">
+                                        <label class="col-12">Select a team</label>
+                                        <div class="col-10">
+                                            <InputSelect @bind-Value="_selectedTeam.Name" @onchange="ChangeTeam" class="form-select">
+                                                @foreach (var team in _allTeams)
+                                                {
+                                                    <option value="@team.Name">@team.Name</option>
+                                                }
+                                            </InputSelect>
+                                        </div>
+                                        <div class="col-2">
+                                            <button class="form-control" @onclick="AddTeamFromSelect">+</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-4">
+                                        <label class="col-12">Or create a team</label>
+                                        <div class="col-10">
+                                            <InputText @bind-Value="_teamName" class="form-control"></InputText>
+                                        </div>
+                                        <div class="col-2">
+                                            <button @onclick="AddTeamFromInput" class="form-control">+</button>
+                                        </div>
+                                    </div>
+                                    <table class="col-12 mb-4 table">
+                                        <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col">name</th>
+                                            <th scope="col">delete</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach (var team in _teamList)
+                                        {
+                                            <tr>
+                                                <td class="w-75">@team.Name</td>
+                                                <td class="w-25"><button class="form-control" style="width: 50px;" @onclick="() => RemoveTeam(team)">-</button></td>
+                                            </tr>
+                                        }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col">
+                                    <div class="row mb-4">
+                                        <label class="col-12">Select a player</label>
+                                        <div class="col-10">
+                                            <InputSelect class="form-select" @bind-Value="_selectedPlayer.Name" @onchange="ChangePlayer">
+
+                                                @foreach (var player in _allPlayers)
+                                                {
+                                                    <option value="@player.Name">@player.Name</option>
+                                                }
+                                            </InputSelect>
+                                        </div>
+                                        <div class="col-2">
+                                            <button class="form-control" @onclick="AddPlayerFromSelect">+</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-4">
+                                        <label class="col-12">Or create a player</label>
+                                        <div class="col-10">
+                                            <InputText class="form-control" @bind-Value="_playerName"></InputText>
+                                        </div>
+                                        <div class="col-2">
+                                            <button class="form-control" @onclick="AddPlayerFromInput">+</button>
+                                        </div>
+                                    </div>
+                                    <table class="col-12 mb-4 table">
+                                        <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col">name</th>
+                                            <th scope="col">delete</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        @foreach (var player in _playerList)
+                                        {
+                                            <tr>
+                                                <td class="w-75">@player.Name</td>
+                                                <td class="w-25"><button class="form-control" style="width: 50px;" @onclick="() => RemovePlayer(player)">-</button></td>
+                                            </tr>
+                                        }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <button @onclick="AddTouranment" class="form-control">Create Tournament</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorLabel))
+        {
+            <div class="errorPrompt">
+                <label> @errorLabel</label>
+            </div>
+        }
+    @*</Authorized>
+</AuthorizeView>*@
+
+
+
+
+@code {
+    private string _tournamentName = "";
+    private string _tournamentDescr = "";
+    private TeamDTO _selectedTeam = new();
+    private List<TeamDTO> _allTeams = new();
+    private List<TeamDTO> _teamList = new();
+    private PlayerDTO _selectedPlayer = new();
+    private List<PlayerDTO> _allPlayers = new();
+    private string _teamName = "";
+    private string _playerName = "";
+    private List<PlayerDTO> _playerList = new();
+    private string errorLabel;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _allTeams = await TeamService.GetAllTeams();
+        _allPlayers = await PlayerService.GetAllPlayers();
+        _selectedPlayer = _allPlayers.Count > 0 ? _allPlayers[0] : new PlayerDTO();
+        _selectedTeam = _allTeams.Count > 0 ? _allTeams[0] : new TeamDTO();
+        errorLabel = "";
+    }
+
+    
+    private void AddTeamFromSelect()
+    {
+        _teamList.Add(_selectedTeam);
+        _allTeams.Remove(_selectedTeam);
+        StateHasChanged();
+    }
+
+    private void RemoveTeam(TeamDTO teamDto)
+    {
+        _teamList.Remove(teamDto);
+        _allTeams.Add(teamDto);
+        StateHasChanged();
+    }
+
+    private void AddPlayerFromSelect()
+    {
+        _playerList.Add(_selectedPlayer);
+        _allPlayers.Remove(_selectedPlayer);
+        StateHasChanged();
+    }
+
+    private async void ChangeTeam(ChangeEventArgs args)
+    {
+        _selectedTeam = _allTeams.Find(t => t.Name.Equals(args.Value));
+        _playerList = await PlayerService.GetPlayerByTeam(_selectedTeam.Name);
+        StateHasChanged();
+    }
+
+    private void ChangePlayer(ChangeEventArgs args)
+    {
+        _selectedPlayer = _allPlayers.Find(p => p.Name.Equals(args.Value));
+        StateHasChanged();
+    }
+    
+    private async void AddPlayerFromInput()
+    {
+        try {
+            PlayerDTO playerDto = new PlayerDTO();
+            playerDto.Name = _playerName;
+            PlayerDTO addedPlayer = await PlayerService.AddPlayer(playerDto);
+            _playerList.Add(addedPlayer);
+            _playerName = "";
+            errorLabel = "";
+            StateHasChanged();
+        }
+        catch (Exception e) {
+            Console.WriteLine(e.StackTrace);
+            errorLabel = $"Error : {e.Message}";
+        }
+        
+    }
+
+    private void RemovePlayer(PlayerDTO playerDto)
+    {
+        _playerList.Remove(playerDto);
+        _allPlayers.Add(playerDto);
+        StateHasChanged();
+    }
+
+    private void AddTeamFromInput()
+    {
+        TeamDTO teamDto = new TeamDTO();
+        teamDto.Name = _teamName;
+        teamDto.Players = _playerList;
+        _teamName = "";
+        _playerList = new List<PlayerDTO>();
+        _teamList.Add(teamDto);
+        StateHasChanged();
+    }
+
+    private async void AddTouranment()
+    {
+        try {
+            TournamentDTO tournamentDto = new TournamentDTO();
+            tournamentDto.Name = _tournamentName;
+            tournamentDto.Description = _tournamentDescr;
+            tournamentDto.Teams = _teamList;
+            await TournamentService.AddTournament(tournamentDto);
+            NavMgr.NavigateTo($"/Tournament?name={tournamentDto.Name}");
+            errorLabel = "";
+        }
+        catch (Exception e) {
+            Console.WriteLine(e.StackTrace);
+            errorLabel = $"Error : {e.Message}";
+        }
+        
+    }
+}

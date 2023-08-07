@@ -1,0 +1,35 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "grpcProtoFiles";
+
+package user;
+
+service UserService {
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
+  rpc GetUserByUsername (GetUserByUsernameRequest) returns (GetUserByUsernameResponse);
+}
+
+message CreateUserRequest {
+  User user = 1;
+}
+
+message CreateUserResponse {
+  User user = 1;
+}
+
+message GetUserByUsernameRequest{ 
+  string username = 1;
+}
+
+message GetUserByUsernameResponse {
+  User user = 1;
+}
+
+message User {
+  string username = 1;
+  string password = 2;
+  string firstName = 3;
+  string lastName = 4;
+  string role = 5;
+  string telephone = 6;
+}

@@ -1,0 +1,43 @@
+@page "/GetPlayersByTeam"
+@using DTO
+@using Contracts
+
+@inject ITournamentService TournamentService
+@inject ITeamService TeamService
+@inject IPlayerService PlayerService
+@inject NavigationManager NavMgr
+
+<div id="main-wrapper" class="container">
+
+    <h1>List of players in team</h1>
+    <div class="row justify-content-center">
+        <label>Team name:</label>
+        <InputText class="form-control" @bind-Value="TeamName"></InputText>
+        
+        <button @onclick="getPlayersByTeam" class="form-control">Search</button>
+        
+        @if (players != null)
+        {
+            <br>
+            <p>Players in team:</p>
+            @foreach (var p in players)
+            {
+                <label>@p.Name</label>
+            }
+        }
+        
+    </div>
+</div>
+
+@code {
+    private List<PlayerDTO> players = null;
+    private string TeamName = null;
+
+    private async Task getPlayersByTeam()
+    {
+        players = await PlayerService.GetPlayerByTeam(TeamName);
+    }
+    
+    
+
+}

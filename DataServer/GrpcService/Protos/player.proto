@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option csharp_namespace = "grpcProtoFiles";
+
+package player;
+
+service PlayerService {
+  rpc CreatePlayer (CreatePlayerRequest) returns (CreatePlayerResponse);
+  rpc GetAllPlayers (GetAllPlayersRequest) returns (GetAllPlayersResponse);
+  rpc GetPlayersByTeam (GetPlayersByTeamRequest) returns (GetPlayersByTeamResponse);
+}
+
+message CreatePlayerRequest {
+  Player player = 1;
+}
+
+message CreatePlayerResponse {
+  Player player = 1;
+}
+
+message GetAllPlayersRequest {
+
+}
+
+message GetAllPlayersResponse {
+  repeated Player players = 1;
+}
+
+message GetPlayersByTeamRequest {
+  string teamName = 1;
+}
+
+message GetPlayersByTeamResponse {
+  repeated player.Player players = 1;
+}
+
+message Player {
+  string name = 1;
+}

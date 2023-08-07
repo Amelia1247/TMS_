@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option java_package = "grpcProtoFiles";
+
+import "team.proto";
+
+package tournament;
+
+service TournamentService {
+  rpc CreateTournament (CreateTournamentRequest) returns (CreateTournamentResponse);
+}
+
+message CreateTournamentRequest {
+  Tournament tournament = 1;
+}
+
+message CreateTournamentResponse {
+  Tournament tournament = 1;
+}
+
+message Tournament {
+  string Name = 1;
+  string Description = 2;
+  repeated team.Team teams = 3;
+}

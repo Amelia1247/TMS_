@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option csharp_namespace = "grpcProtoFiles";
+
+import "Protos/player.proto";
+
+package team;
+
+service TeamService {
+  rpc CreateTeam (CreateTeamRequest) returns (CreateTeamResponse);
+  rpc GetAllTeams (GetAllTeamsRequest) returns (GetAllTeamsResponse);
+}
+
+message CreateTeamRequest {
+  Team team = 1;
+}
+
+message CreateTeamResponse {
+  Team team = 1;
+}
+
+message GetAllTeamsRequest {
+
+}
+
+message GetAllTeamsResponse {
+  repeated Team teams = 1;
+}
+
+message Team {
+  string name = 1;
+  repeated player.Player players = 2;
+}

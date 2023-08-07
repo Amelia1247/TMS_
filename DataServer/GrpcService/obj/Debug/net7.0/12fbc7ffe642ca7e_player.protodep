@@ -1,0 +1,2 @@
+obj\Debug\net7.0\Protos/Player.cs \
+obj\Debug\net7.0\Protos/PlayerGrpc.cs: Protos/player.proto

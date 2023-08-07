@@ -1,0 +1,98 @@
+﻿@page "/CreateAccount"
+@inject IAuthService AuthService
+@inject NavigationManager navMgr
+@inject IUserService UserService
+
+
+@using DTO
+@using Contracts
+<div id="main-wrapper" class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-10">
+            <div class="card border-0">
+                <div class="card-body p-0">
+                    <div class="row no-gutters">
+                        <div class="col-lg-6">
+                            <div class="p-5">
+                                <div class="mb-5">
+                                    <h3 class="h4 font-weight-bold text-theme">Create an account</h3>
+                                </div>
+                                <h6 class="h5 mb-0">Welcome to TMS! Enter credentials to create account</h6>
+
+                                <form>
+                                    <div class="form-group mt-3">
+                                        <label for="exampleInputEmail1">FirstName</label>
+                                        <input type="text" class="form-control" id="exampleInputEmail1" @bind="_userToCreate.FirstName">
+                                    </div>
+                                    <div class="form-group mt-3">
+                                        <label for="exampleInputPassword1">LastName</label>
+                                        <input type="text" class="form-control" id="exampleInputPassword1" @bind="_userToCreate.LastName">
+                                    </div> 
+                                    <div class="form-group mt-3">
+                                        <label for="exampleInputPassword1">Username</label>
+                                        <input type="text" class="form-control" id="exampleInputPassword1" @bind="_userToCreate.Username">
+                                    </div> 
+                                    <div class="form-group mt-3">
+                                        <label for="exampleInputPassword1">Password</label>
+                                        <input type="password" class="form-control" id="exampleInputPassword1" @bind="_userToCreate.Password">
+                                    </div>
+                                    <div class="form-group mb-5 mt-3">
+                                        <label for="exampleInputPassword1">Telephone</label>
+                                        <input type="text" class="form-control" id="exampleInputPassword1" @bind="_userToCreate.Telephone">
+                                    </div>
+                                    <button type="button" class="btn btn-theme" @onclick="CreateAccountAsync">Create account</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                 @if (!string.IsNullOrEmpty(errorLabel)) {
+                                   <div class="errorPrompt">
+                                       <label> @errorLabel</label>
+                                   </div>
+                               }
+            </div>
+            <!-- end card -->
+
+            <p class="text-center mb-10">Already have an account? <a href="/Login" class="text-primary ml-1">Login</a></p>
+
+            <!-- end row -->
+
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- Row -->
+</div>
+
+@code {
+
+    private UserDTO _userToCreate = new UserDTO();
+    private string errorLabel;
+
+    private async Task CreateAccountAsync() {
+        Console.WriteLine("Create account");
+        try {
+            if (!AllFieldsAreSet(_userToCreate)) {
+                errorLabel = "All Fields must be set";
+                Console.Write("All fields must be set");
+                return;
+            }
+            _userToCreate.Role = "Guest";
+            await UserService.CreateUserAsync(_userToCreate);
+            navMgr.NavigateTo("/Login");
+
+        }
+        catch (Exception e) {
+            errorLabel = $"Error : {e.Message}";
+        }
+
+    }
+
+    private bool AllFieldsAreSet(UserDTO userToCreate) {
+        return !string.IsNullOrEmpty(userToCreate.Username) && !string.IsNullOrEmpty(userToCreate.Password)
+               && !string.IsNullOrEmpty(userToCreate.FirstName) && !string.IsNullOrEmpty(userToCreate.LastName)
+               && !string.IsNullOrEmpty(userToCreate.Telephone);
+    }
+
+}
