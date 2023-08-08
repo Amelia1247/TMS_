@@ -30,7 +30,7 @@ public class PlayerController {
         }
     }
 
-    @GetMapping(value = "player")
+    @GetMapping(value = "/player")
     public ResponseEntity getPlayers(@RequestParam(required = false) String team) {
         try {
             List<PlayerDTO> players = new ArrayList<>();
